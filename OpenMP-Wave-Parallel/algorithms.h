@@ -11,7 +11,7 @@ typedef struct net_t {
 
 typedef struct result_t {
     double time;
-    double average_time;
+    double time_full;
     int iterations;
 } result_t;
 
@@ -26,8 +26,6 @@ double process_block(net_t *net, int x, int y);
 void save_result(net_t *net);
 
 void parallel_algorithm(net_t *net, result_t *res);
-
-void test_consecutive(int times, int size);
 
 void test_parallel(int times, int size, int threads_num);
 
