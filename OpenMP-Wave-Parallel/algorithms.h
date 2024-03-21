@@ -15,7 +15,7 @@ typedef struct result_t {
     int iterations;
 } result_t;
 
-void prepare_net(int size, double **u, double **f);
+void prepare_net(net_t *net);
 
 net_t *create_net(int size);
 
