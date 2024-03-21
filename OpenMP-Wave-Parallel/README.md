@@ -35,7 +35,8 @@ The algorithm is expected to approximate the function so that the resulting net 
 - The efficiency of the parallel algorithm significantly decreases (run time increases) after using more than 8 threads
 - The amount of iterations remains approximately consistent 
 
-![mine_condition.png](..%2F..%2FDownloads%2Fmine_condition.png)
+![mine_condition](https://github.com/AlexShmak/math-it/assets/113236455/c9525619-32ea-45fb-a212-6f9910c428a3)
+
 
 ---
 
