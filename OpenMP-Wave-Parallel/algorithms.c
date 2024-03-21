@@ -5,7 +5,7 @@
 #include <string.h>
 #include "algorithms.h"
 
-#define EPS 0.0001
+#define EPS 0.001
 #define BLOCK_SIZE 64
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -22,6 +22,7 @@ void prepare_net(net_t *net) {
             f[i][j] = 0;
             double x = i * h;
             double y = j * h;
+            //! Book condition
 //            if (j == 0) {
 //                u[i][j] = 100 - 200 * x;
 //            } else if (i == 0) {
@@ -33,6 +34,7 @@ void prepare_net(net_t *net) {
 //            } else {
 //                u[i][j] = (rand() % 201) - 100;
 //            }
+            //! Mine condition
             double interval = 100.0 / (size + 2);
             if (j == 0) {
                 u[i][j] = 100;
@@ -45,7 +47,6 @@ void prepare_net(net_t *net) {
             } else {
                 u[i][j] = (rand() % 201) - 100;
             }
-
         }
     }
 }
