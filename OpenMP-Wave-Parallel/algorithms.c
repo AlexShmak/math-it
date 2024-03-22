@@ -10,7 +10,31 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 
-void prepare_net(net_t *net) {
+void prepare_net_mine_condition(net_t *net) {
+    // * filling the net
+    int size = net->size;
+    double **u = net->u;
+    double **f = net->f;
+
+    for (int i = 0; i < size + 2; i++) {
+        for (int j = 0; j < size + 2; j++) {
+            f[i][j] = 0;
+            //! Mine condition
+            double interval = 100.0 / (size + 2);
+            if (j == 0) {
+                u[i][j] = 100;
+            } else if (i == 0 || i == size + 1) {
+                if (j < 100) u[i][j] = u[i][j - 1] - interval;
+            } else if (j == size + 1) {
+                u[i][j] = 0;
+            } else {
+                u[i][j] = (rand() % 201) - 100;
+            }
+        }
+    }
+}
+
+void prepare_net_book_condition(net_t *net) {
     // * filling the net
     int size = net->size;
     double **u = net->u;
@@ -22,28 +46,16 @@ void prepare_net(net_t *net) {
             f[i][j] = 0;
             double x = i * h;
             double y = j * h;
+
             //! Book condition
-//            if (j == 0) {
-//                u[i][j] = 100 - 200 * x;
-//            } else if (i == 0) {
-//                u[i][j] = 100 - 200 * y;
-//            } else if (j == size + 1) {
-//                u[i][j] = -100 + 200 * x;
-//            } else if (i == size + 1) {
-//                u[i][j] = -100 + 200 * y;
-//            } else {
-//                u[i][j] = (rand() % 201) - 100;
-//            }
-            //! Mine condition
-            double interval = 100.0 / (size + 2);
             if (j == 0) {
-                u[i][j] = 100;
+                u[i][j] = 100 - 200 * x;
             } else if (i == 0) {
-                if (j < 100) u[i][j] = u[i][j - 1] - interval;
+                u[i][j] = 100 - 200 * y;
             } else if (j == size + 1) {
-                u[i][j] = 0;
+                u[i][j] = -100 + 200 * x;
             } else if (i == size + 1) {
-                if (j < 100) u[i][j] = u[i][j - 1] - interval;
+                u[i][j] = -100 + 200 * y;
             } else {
                 u[i][j] = (rand() % 201) - 100;
             }
@@ -51,7 +63,7 @@ void prepare_net(net_t *net) {
     }
 }
 
-net_t *create_net(int size) {
+net_t *create_net(int size, func f) {
     net_t *net = malloc(sizeof(net_t));
     net->size = size;
     net->u = (double **) malloc((net->size + 2) * sizeof(double *));
@@ -60,7 +72,7 @@ net_t *create_net(int size) {
         net->u[i] = (double *) malloc((net->size + 2) * sizeof(double));
         net->f[i] = (double *) malloc((net->size + 2) * sizeof(double));
     }
-    prepare_net(net);
+    f(net);
     int net_space = net->size - 2;
     net->blocks_num = net_space / BLOCK_SIZE;
     if (net->blocks_num * BLOCK_SIZE != net_space) net->blocks_num += 1;
@@ -148,17 +160,17 @@ void save_result(net_t *net) {
 
 void test_parallel(int times, int size, int threads_num) {
     result_t *res = malloc(sizeof(result_t));
-
     double time[10];
 
-    // * Test Parallel Algorithm
+    // * Test Parallel Algorithm (Book Condition)
+    printf("### Book Conditions ###\n");
     printf("-------------------------\n");
     printf("|  net_t Size |    %d    |\n", size);
     printf("-------------------------\n");
     printf("|   Time    |    Iter   |\n");
     printf("-------------------------\n");
     for (int i = 0; i < times; i++) {
-        net_t *net = create_net(size);
+        net_t *net = create_net(size, prepare_net_book_condition);
         res->time = 0;
         res->iterations = 0;
         omp_set_num_threads(threads_num);
@@ -178,19 +190,66 @@ void test_parallel(int times, int size, int threads_num) {
 
     // * Confidence interval
 
-    double sum = 0;
+    double sum_book = 0;
     for (int i = 0; i < times; i++) {
-        sum += (pow((time[i] - res->time_full / times), 2));
+        sum_book += (pow((time[i] - res->time_full / times), 2));
     }
-    double standard_deviation = sqrt( sum / times);
-    double error_limit = 1.96 * standard_deviation/ sqrt(times);
+    double standard_deviation_book = sqrt(sum_book / times);
+    double error_limit_book = 1.96 * standard_deviation_book / sqrt(times);
 
     printf("|        ConfidenceInterval        |\n");
     printf("-------------------------\n");
-    printf("|       [ %f , %f ]         |\n", res->time_full/times - error_limit, res->time_full/times + error_limit);
+    printf("|       [ %f , %f ]         |\n", res->time_full / times - error_limit_book,
+           res->time_full / times + error_limit_book);
     printf("-------------------------\n\n");
 
-    printf("%f", error_limit);
+    free(res);
+}
+
+void test_parallel_mine(int times, int size, int threads_num) {
+    result_t *res = malloc(sizeof(result_t));
+    double time[10];
+
+    // * Test Parallel Algorithm (Mine Condition)
+    printf("### My Conditions ###\n");
+    printf("-------------------------\n");
+    printf("|  net_t Size |    %d    |\n", size);
+    printf("-------------------------\n");
+    printf("|   Time    |    Iter   |\n");
+    printf("-------------------------\n");
+    for (int i = 0; i < times; i++) {
+        net_t *net = create_net(size, prepare_net_mine_condition);
+        res->time = 0;
+        res->iterations = 0;
+        omp_set_num_threads(threads_num);
+        parallel_algorithm(net, res);
+
+        time[i] = res->time;
+
+        printf("|  %f |    %d   |\n", res->time, res->iterations);
+        save_result(net);
+        free(net);
+    }
+    printf("-------------------------\n");
+    printf("|        AvgTime        |\n");
+    printf("-------------------------\n");
+    printf("|       %f        |\n", res->time_full / times);
+    printf("-------------------------\n");
+
+    // * Confidence interval
+
+    double sum_book = 0;
+    for (int i = 0; i < times; i++) {
+        sum_book += (pow((time[i] - res->time_full / times), 2));
+    }
+    double standard_deviation_book = sqrt(sum_book / times);
+    double error_limit_book = 1.96 * standard_deviation_book / sqrt(times);
+
+    printf("|        ConfidenceInterval        |\n");
+    printf("-------------------------\n");
+    printf("|       [ %f , %f ]         |\n", res->time_full / times - error_limit_book,
+           res->time_full / times + error_limit_book);
+    printf("-------------------------\n\n");
 
     free(res);
 }

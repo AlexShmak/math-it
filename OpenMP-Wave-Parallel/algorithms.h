@@ -15,11 +15,11 @@ typedef struct result_t {
     int iterations;
 } result_t;
 
-void prepare_net(net_t *net);
+typedef void (*func)(net_t *);
 
-net_t *create_net(int size);
+void prepare_net_mine_condition(net_t *net);
 
-void consecutive_algorithm(net_t *net, result_t *res);
+net_t *create_net(int size, func f);
 
 double process_block(net_t *net, int x, int y);
 
@@ -28,5 +28,7 @@ void save_result(net_t *net);
 void parallel_algorithm(net_t *net, result_t *res);
 
 void test_parallel(int times, int size, int threads_num);
+
+void test_parallel_mine(int times, int size, int threads_num);
 
 #endif //OPENMP_WAVE_PARALLEL_ALGORITHMS_H
