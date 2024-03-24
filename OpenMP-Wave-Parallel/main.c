@@ -4,19 +4,14 @@
 
 int main() {
     int times = 10;
-    int net_size = 400;
+    int net_size[] = {100, 300, 500, 1000, 2000};
+    int net_sizes = sizeof (net_size) / sizeof (net_size[0]);
     int threads_num[] = {1, 2, 4, 8, 16};
-    int number_of_elements = sizeof(threads_num) / sizeof(threads_num[0]);
+    int threads_numbers = sizeof(threads_num) / sizeof(threads_num[0]);
+    printf("N  - net size\nTN - threads number\nAT - average time\nCI - confidence interval\nA  - acceleration\n\n");
+    test_parallel(times, net_size, net_sizes, threads_num, threads_numbers);
 
-    for (int i = 0; i < number_of_elements; i++) {
-        printf("#### Threads: %d ####\n", threads_num[i]);
-        test_parallel(times, net_size, threads_num[i]);
-    }
 
-    for (int i = 0; i < number_of_elements; i++) {
-        printf("#### Threads: %d ####\n", threads_num[i]);
-        test_parallel_mine(times, net_size, threads_num[i]);
-    }
 
     return 0;
 }

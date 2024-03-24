@@ -138,7 +138,7 @@ void parallel_algorithm(net_t *net, result_t *res) {
     } while (d_max > EPS);
     double time_end = omp_get_wtime();
     res->time = time_end - time_start;
-    res->time_full += res->time;
+    res->avg_time += res->time;
 }
 
 void save_result(net_t *net) {
@@ -158,98 +158,47 @@ void save_result(net_t *net) {
     fclose(file);
 }
 
-void test_parallel(int times, int size, int threads_num) {
+void test_parallel(int times, const int *size, int net_sizes, const int *threads_num, int threads_numbers) {
     result_t *res = malloc(sizeof(result_t));
-    double time[10];
+    double time[times];
+    func method[] = {prepare_net_book_condition, prepare_net_mine_condition};
 
-    // * Test Parallel Algorithm (Book Condition)
-    printf("### Book Conditions ###\n");
-    printf("-------------------------\n");
-    printf("|  net_t Size |    %d    |\n", size);
-    printf("-------------------------\n");
-    printf("|   Time    |    Iter   |\n");
-    printf("-------------------------\n");
-    for (int i = 0; i < times; i++) {
-        net_t *net = create_net(size, prepare_net_book_condition);
-        res->time = 0;
-        res->iterations = 0;
-        omp_set_num_threads(threads_num);
-        parallel_algorithm(net, res);
+//    // * Test Parallel Algorithm (Book Condition)
+    for (int f = 0; f < 2; f++) {
+        if (f == 0) {
+            printf("#### Book Condition ####\n\n");
+        } else { printf("#### My Condition ####\n\n"); }
+        for (int i = 0; i < net_sizes; i++) {
+            for (int j = 0; j < threads_numbers; j++) {
+                for (int k = 0; k < times; k++) {
+                    net_t *net = create_net(size[i], method[f]);
+                    res->time = 0;
+                    res->iterations = 0;
+                    omp_set_num_threads(threads_num[j]);
+                    parallel_algorithm(net, res);
+                    time[k] = res->time;
+                    res->avg_time += time[k];
+                    save_result(net);
+                    free(net);
+                }
+                res->avg_time = res->avg_time / times;
+                if (threads_num[j] == 1) res->avg_time_one_thread = res->avg_time;
 
-        time[i] = res->time;
+                // * Confidence interval
+                double sum_book = 0;
+                for (int n = 0; n < times; n++) {
+                    sum_book += (pow((time[n] - res->avg_time), 2));
+                }
+                double standard_deviation_book = sqrt(sum_book / times);
+                double error_limit_book = 1.96 * standard_deviation_book / sqrt(times);
 
-        printf("|  %f |    %d   |\n", res->time, res->iterations);
-        save_result(net);
-        free(net);
+                printf("N: %4.d | TN: %2.d | AT: %4.4f | CI: [ %4.4f ; %4.4f ] | A: %.3f\n",
+                       size[i], threads_num[j], res->avg_time, res->avg_time - error_limit_book,
+                       res->avg_time + error_limit_book, res->avg_time_one_thread / res->avg_time);
+            }
+            printf("\n");
+        }
+        printf("\n");
     }
-    printf("-------------------------\n");
-    printf("|        AvgTime        |\n");
-    printf("-------------------------\n");
-    printf("|       %f        |\n", res->time_full / times);
-    printf("-------------------------\n");
-
-    // * Confidence interval
-
-    double sum_book = 0;
-    for (int i = 0; i < times; i++) {
-        sum_book += (pow((time[i] - res->time_full / times), 2));
-    }
-    double standard_deviation_book = sqrt(sum_book / times);
-    double error_limit_book = 1.96 * standard_deviation_book / sqrt(times);
-
-    printf("|        ConfidenceInterval        |\n");
-    printf("-------------------------\n");
-    printf("|       [ %f , %f ]         |\n", res->time_full / times - error_limit_book,
-           res->time_full / times + error_limit_book);
-    printf("-------------------------\n\n");
-
-    free(res);
-}
-
-void test_parallel_mine(int times, int size, int threads_num) {
-    result_t *res = malloc(sizeof(result_t));
-    double time[10];
-
-    // * Test Parallel Algorithm (Mine Condition)
-    printf("### My Conditions ###\n");
-    printf("-------------------------\n");
-    printf("|  net_t Size |    %d    |\n", size);
-    printf("-------------------------\n");
-    printf("|   Time    |    Iter   |\n");
-    printf("-------------------------\n");
-    for (int i = 0; i < times; i++) {
-        net_t *net = create_net(size, prepare_net_mine_condition);
-        res->time = 0;
-        res->iterations = 0;
-        omp_set_num_threads(threads_num);
-        parallel_algorithm(net, res);
-
-        time[i] = res->time;
-
-        printf("|  %f |    %d   |\n", res->time, res->iterations);
-        save_result(net);
-        free(net);
-    }
-    printf("-------------------------\n");
-    printf("|        AvgTime        |\n");
-    printf("-------------------------\n");
-    printf("|       %f        |\n", res->time_full / times);
-    printf("-------------------------\n");
-
-    // * Confidence interval
-
-    double sum_book = 0;
-    for (int i = 0; i < times; i++) {
-        sum_book += (pow((time[i] - res->time_full / times), 2));
-    }
-    double standard_deviation_book = sqrt(sum_book / times);
-    double error_limit_book = 1.96 * standard_deviation_book / sqrt(times);
-
-    printf("|        ConfidenceInterval        |\n");
-    printf("-------------------------\n");
-    printf("|       [ %f , %f ]         |\n", res->time_full / times - error_limit_book,
-           res->time_full / times + error_limit_book);
-    printf("-------------------------\n\n");
-
     free(res);
 }

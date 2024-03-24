@@ -11,7 +11,8 @@ typedef struct net_t {
 
 typedef struct result_t {
     double time;
-    double time_full;
+    double avg_time;
+    double avg_time_one_thread;
     int iterations;
 } result_t;
 
@@ -27,8 +28,6 @@ void save_result(net_t *net);
 
 void parallel_algorithm(net_t *net, result_t *res);
 
-void test_parallel(int times, int size, int threads_num);
-
-void test_parallel_mine(int times, int size, int threads_num);
+void test_parallel(int times, const int *size, int net_sizes, const int *threads_num, int threads_numbers);
 
 #endif //OPENMP_WAVE_PARALLEL_ALGORITHMS_H
