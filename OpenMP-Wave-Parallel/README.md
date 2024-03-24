@@ -35,7 +35,7 @@ Implementing and making experiments with parallel algorithm for solving partial 
 <details>
 <summary>Boundary value problems</summary>
 
-<!-- TODO: add a picture -->
+![Screenshot from 2024-03-24 19-42-24](https://github.com/AlexShmak/math-it/assets/113236455/87330112-b2ff-4fb0-8dc2-83b2613ab2c4)
 
 </details>
 
@@ -50,7 +50,7 @@ The results given in the book could not be reproduced in terms of execution time
 <details>
 <summary>Graph</summary>
 
-<!-- TODO:add a picture -->
+![Screenshot from 2024-03-24 19-50-40](https://github.com/AlexShmak/math-it/assets/113236455/02fd47b5-b9ae-4314-9b78-16e854ca83f6)
 
 </details>
 
