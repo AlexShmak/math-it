@@ -1,4 +1,4 @@
-![Screenshot from 2024-03-24 19-42-24](https://github.com/AlexShmak/math-it/assets/113236455/be4a3a81-8703-430f-884f-9c487dab01d9)# The wave parallel algorithm 
+# Wave parallel algorithm
 
 Implementing and making experiments with parallel algorithm for solving partial differential equations (C, OpenMP).
 
