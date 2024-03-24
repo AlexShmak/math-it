@@ -1,4 +1,4 @@
-# The wave parallel algorithm 
+![Screenshot from 2024-03-24 19-42-24](https://github.com/AlexShmak/math-it/assets/113236455/be4a3a81-8703-430f-884f-9c487dab01d9)# The wave parallel algorithm 
 
 Implementing and making experiments with parallel algorithm for solving partial differential equations (C, OpenMP).
 
@@ -45,6 +45,7 @@ Implementing and making experiments with parallel algorithm for solving partial 
 
 
 The results given in the book could not be reproduced in terms of execution time and acceleration, however the similar tendency is clear to notice.
+- Execution time considerably rises when increasing the size of net (the number is not consistend and does not have a specific periodicity)
 - The calculation results are given in the following [table](https://docs.google.com/spreadsheets/d/1B8UMsyFEmXLN1PIc9MqrMURixblv_F2LvgiZPTIZZMI/edit?usp=sharing)
 
 <details>
@@ -68,8 +69,8 @@ This exact experiment was chosen in order to have a better and simpler visualisa
 The algorithm is expected to approximate the function so that the resulting net would represent the values gradually decreasing from 100 to 0 with the given speed (interval). The efficiency is expected to rise in in accordance with the number of threads used.
 
 ### The actual result
-- The actual result meets the expectations drawn out in the expected results. The result changes dramatically when increasing $epsilon$ value. The acceptable result is reached starting from $epsilon = 0.001$ precision
-- The efficiency of the algorithm gradually increases when using more threads
+- The actual result meets the expectations drawn out in the expected results. The result changes dramatically when increasing $epsilon$ value (precision loss). The acceptable result is reached starting from $epsilon = 0.001$ precision
+- The efficiency of the algorithm gradually increases when using more threads, however the perfomance in some cases drops when using 16 threads.
 - The calculations are given in the following [table](https://docs.google.com/spreadsheets/d/1B8UMsyFEmXLN1PIc9MqrMURixblv_F2LvgiZPTIZZMI/edit?usp=sharing)
 
 
