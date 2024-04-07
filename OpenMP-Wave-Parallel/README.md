@@ -1,4 +1,4 @@
-# Wave parallel algorithm
+# The wave parallel algorithm 
 
 Implementing and making experiments with parallel algorithm for solving partial differential equations (C, OpenMP).
 
@@ -17,7 +17,7 @@ Implementing and making experiments with parallel algorithm for solving partial 
 - ___Times___ run per a number of threads: $10$ 
 - ___Confidence intervals___ are counted for each number of threads in both experiments
 - Executed with ___-O3 optimization___
-- The ___net size___ is changing withing the range {100, 300, 500, 1000, 2000} 
+- The ___net size___ is changing withing the range {100, 300, 500, 1000} 
 - The ___number of threads___ is changing within the range {1, 2, 4, 8, 16}
 - The ___net___ is filled with random numbers from [-100, 100]
 - $Block\_size = 64$
@@ -34,6 +34,7 @@ Implementing and making experiments with parallel algorithm for solving partial 
 
 <details>
 <summary>Boundary value problems</summary>
+
 
 ![Screenshot from 2024-03-24 19-42-24](https://github.com/AlexShmak/math-it/assets/113236455/87330112-b2ff-4fb0-8dc2-83b2613ab2c4)
 
@@ -52,6 +53,7 @@ The results given in the book could not be reproduced in terms of execution time
 <summary>Graph</summary>
 
 ![Screenshot from 2024-03-24 19-50-40](https://github.com/AlexShmak/math-it/assets/113236455/02fd47b5-b9ae-4314-9b78-16e854ca83f6)
+
 
 </details>
 
