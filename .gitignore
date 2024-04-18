@@ -27,3 +27,4 @@
 /.idea
 /OpenMP-Wave-Parallel/graph/array.txt
 /SVD/.venv
+/SVD/__pycache__
