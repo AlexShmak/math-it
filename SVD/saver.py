@@ -7,26 +7,51 @@
     VT:2D INT ARRAY
 """
 
+import os
 import numpy as np
 
 
-def create_meta_data(w, h, n):
-    metadata = [
-        w.to_bytes(2, "big"),
-        h.to_bytes(2, "big"),
-        n.to_bytes(2, "big"),
+def create(path, width, height, n):
+    meta = [
+        width.to_bytes(2, "little"),
+        height.to_bytes(2, "little"),
+        n.to_bytes(2, "little"),
     ]
 
-    with open("middle_repr.lol", "wb") as file:
-        file.write(b"".join(metadata))
+    with open(path, "wb") as file:
+        file.write(b"".join(meta))
 
 
-def write_middle_repr(r, g, b):
-    red = [np.arrayx(x).tobytes() for x in r]
-    green = [np.array(x).tobytes() for x in g]
-    blue = [np.array(x).tobytes() for x in b]
+def write_matrices(path, red, green, blue):
+    data_r = [np.array(x).tobytes() for x in red]
+    data_g = [np.array(x).tobytes() for x in green]
+    data_b = [np.array(x).tobytes() for x in blue]
 
-    with open("middle_repr.lol", "ab") as file:
-        for i in [red, green, blue]:
-            for j in i:
-                file.write(j)
+    with open(path, "ab") as file:
+        for item in [data_r, data_g, data_b]:  # r g b
+            for x in item:  # u s v
+                file.write(x)
+
+
+def file_size(path):
+    return str((os.path.getsize(path) // 1024)) + " Kbs"
+
+
+def read_matrices(path):
+    with open(path, "rb") as file:
+        data = [x.to_bytes() for x in file.read()]
+
+    # Читаем заголовок (little end)
+    height = int.from_bytes(b"" + data[3] + data[2])
+    n = int.from_bytes(b"" + data[5] + data[4])
+
+    res = []
+
+    for i in range(3):
+        f = 6 + height * i  # сдвиг относительно матриц r g b
+        u = data[f : height + f]
+        s = data[height + f + 1 : height + f + 1 + n]
+        v = data[height + f + 2 + n : height + f + 2 + 2 * n]
+        res.append((u, s, v))
+
+    return res
