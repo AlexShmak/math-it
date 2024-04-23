@@ -13,6 +13,10 @@
 > - `luntik.bmp` : 594 $\times$ 811 (`1.4 MB`)
 > - `highres.bmp` : 5304 $\times$ 7952 (`121 MB`)
 
+| luntik    | highres   |
+| --------- | --------- |
+| something | something |
+
 ---
 
 ## Primitive implementation
