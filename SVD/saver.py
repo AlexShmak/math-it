@@ -1,16 +1,22 @@
 """
-    WIDTH:INT
-    HEIGHT:INT
-    N:INT
-    U:2D INT ARRAY
-    SIGMA:INT ARRAY
-    VT:2D INT ARRAY
+    ------
+    meta-information:
+    ------
+    WIDTH: 2 bytes
+    HEIGHT: 2 bytes
+    N: 2 bytes
+    ------
+    For each color channel consquently:
+    ------
+    U: byte per value (length of U == HEIGHT)
+    SIGMA: byte per value (length of SIGMA == N)
+    V: byte per value (length of V == N)
 """
 
 import os
 import numpy as np
 
-
+""" Function to create meta-information """
 def create(path, width, height, n):
     meta = [
         width.to_bytes(2, "little"),
@@ -21,7 +27,7 @@ def create(path, width, height, n):
     with open(path, "wb") as file:
         file.write(b"".join(meta))
 
-
+""" Function to write U, SIGMA and V matrices of each color channel of a picture """
 def write_matrices(path, red, green, blue):
     data_r = [np.array(x).tobytes() for x in red]
     data_g = [np.array(x).tobytes() for x in green]
@@ -32,11 +38,11 @@ def write_matrices(path, red, green, blue):
             for x in item:  # u s v
                 file.write(x)
 
-
+""" Function to display size of a file """
 def file_size(path):
     return str((os.path.getsize(path) / 1024)) + " Kbs"
 
-
+""" Functoion to read information about color channels' matrices from a .lol file """
 def read_matrices(path):
     with open(path, "rb") as file:
         data = [x.to_bytes() for x in file.read()]
