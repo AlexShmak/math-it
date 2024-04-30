@@ -68,7 +68,7 @@
 - Image data is saved in `.lol` files
 - Each pictures's data file stores information about:
   - metadata about picture's width, height, N (compression factor)
-  - U, S, V matrices of each color chanel of the picture
+  - U, S, V matrices of each color channel of the picture
 
 ### File format (`.lol file`)
 
